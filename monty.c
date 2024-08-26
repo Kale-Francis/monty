@@ -148,6 +148,17 @@ void add(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * nop - Does nothing.
+ * @stack: Double pointer to the top of the stack (unused).
+ * @line_number: Line number where the instruction appears (unused).
+ */
+void nop(stack_t **stack, unsigned int line_number)
+{
+    (void)stack;      /* Avoid unused parameter warning */
+    (void)line_number; /* Avoid unused parameter warning */
+}
+
+/**
  * main - Entry point for the Monty bytecode interpreter.
  * @argc: Argument count.
  * @argv: Argument vector.
@@ -197,6 +208,8 @@ int main(int argc, char *argv[])
             swap(&stack, line_number);
         else if (strcmp(opcode, "add") == 0)
             add(&stack, line_number);
+        else if (strcmp(opcode, "nop") == 0)
+            nop(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
