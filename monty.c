@@ -122,6 +122,32 @@ void swap(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * add - Adds the top two elements of the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
+void add(stack_t **stack, unsigned int line_number)
+{
+    stack_t *first, *second;
+    int sum;
+
+    if (*stack == NULL || (*stack)->next == NULL)
+    {
+        fprintf(stderr, "L%u: can't add, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    first = *stack;
+    second = (*stack)->next;
+
+    sum = first->n + second->n;
+    second->n = sum;
+
+    *stack = second;
+    free(first);
+}
+
+/**
  * main - Entry point for the Monty bytecode interpreter.
  * @argc: Argument count.
  * @argv: Argument vector.
@@ -169,6 +195,8 @@ int main(int argc, char *argv[])
             pop(&stack, line_number);
         else if (strcmp(opcode, "swap") == 0)
             swap(&stack, line_number);
+        else if (strcmp(opcode, "add") == 0)
+            add(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
