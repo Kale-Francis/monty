@@ -1,23 +1,23 @@
-#define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "monty.h"
 
-/* Push function implementation */
-void push(stack_t **stack, unsigned int line_number)
+#define BUFFER_SIZE 1024
+
+/**
+ * push - Pushes an element to the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ * @arg: The argument to be pushed onto the stack.
+ */
+void push(stack_t **stack, unsigned int line_number, char *arg)
 {
-    char *arg = strtok(NULL, " \n");
-    int value;
+    int num;
     stack_t *new_node;
 
-    if (arg == NULL || (atoi(arg) == 0 && strcmp(arg, "0") != 0))
+    if (arg == NULL || ((num = atoi(arg)) == 0 && strcmp(arg, "0") != 0))
     {
         fprintf(stderr, "L%u: usage: push integer\n", line_number);
         exit(EXIT_FAILURE);
     }
-
-    value = atoi(arg);
 
     new_node = malloc(sizeof(stack_t));
     if (new_node == NULL)
@@ -26,9 +26,9 @@ void push(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    new_node->n = value;
-    new_node->next = *stack;
+    new_node->n = num;
     new_node->prev = NULL;
+    new_node->next = *stack;
 
     if (*stack != NULL)
         (*stack)->prev = new_node;
@@ -36,14 +36,17 @@ void push(stack_t **stack, unsigned int line_number)
     *stack = new_node;
 }
 
-/* Pall function implementation */
+/**
+ * pall - Prints all the values on the stack, starting from the top.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears (unused).
+ */
 void pall(stack_t **stack, unsigned int line_number)
 {
-    stack_t *current;
+    stack_t *current = *stack;
 
-    (void)line_number; /* Unused parameter */
+    (void)line_number; /* Avoid unused parameter warning */
 
-    current = *stack;
     while (current != NULL)
     {
         printf("%d\n", current->n);
@@ -51,7 +54,11 @@ void pall(stack_t **stack, unsigned int line_number)
     }
 }
 
-/* Pint function implementation */
+/**
+ * pint - Prints the value at the top of the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void pint(stack_t **stack, unsigned int line_number)
 {
     if (*stack == NULL)
@@ -63,10 +70,14 @@ void pint(stack_t **stack, unsigned int line_number)
     printf("%d\n", (*stack)->n);
 }
 
-/* Pop function implementation */
+/**
+ * pop - Removes the top element of the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void pop(stack_t **stack, unsigned int line_number)
 {
-    stack_t *top;
+    stack_t *temp;
 
     if (*stack == NULL)
     {
@@ -74,16 +85,20 @@ void pop(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    top = *stack;
+    temp = *stack;
     *stack = (*stack)->next;
 
     if (*stack != NULL)
         (*stack)->prev = NULL;
 
-    free(top);
+    free(temp);
 }
 
-/* Swap function implementation */
+/**
+ * swap - Swaps the top two elements of the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void swap(stack_t **stack, unsigned int line_number)
 {
     stack_t *first, *second;
@@ -100,18 +115,20 @@ void swap(stack_t **stack, unsigned int line_number)
     first->next = second->next;
     if (second->next != NULL)
         second->next->prev = first;
-
     second->prev = NULL;
     second->next = first;
     first->prev = second;
-
     *stack = second;
 }
 
-/* Add function implementation */
+/**
+ * add - Adds the top two elements of the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void add(stack_t **stack, unsigned int line_number)
 {
-    stack_t *top;
+    stack_t *first, *second;
     int sum;
 
     if (*stack == NULL || (*stack)->next == NULL)
@@ -120,25 +137,25 @@ void add(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    top = *stack;
-    sum = top->n + top->next->n;
+    first = *stack;
+    second = (*stack)->next;
 
-    pop(stack, line_number);
-    (*stack)->n = sum;
+    sum = first->n + second->n;
+    second->n = sum;
+
+    *stack = second;
+    free(first);
 }
 
-/* Nop function implementation */
-void nop(stack_t **stack, unsigned int line_number)
-{
-    (void)stack; /* Unused parameter */
-    (void)line_number; /* Unused parameter */
-}
-
-/* Sub function implementation */
+/**
+ * sub - Subtracts the top element of the stack from the second top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void sub(stack_t **stack, unsigned int line_number)
 {
-    stack_t *top;
-    int diff;
+    stack_t *first, *second;
+    int difference;
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -146,18 +163,25 @@ void sub(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    top = *stack;
-    diff = top->next->n - top->n;
+    first = *stack;
+    second = (*stack)->next;
 
-    pop(stack, line_number);
-    (*stack)->n = diff;
+    difference = second->n - first->n;
+    second->n = difference;
+
+    *stack = second;
+    free(first);
 }
 
-/* Div function implementation */
+/**
+ * div_op - Divides the second top element of the stack by the top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void div_op(stack_t **stack, unsigned int line_number)
 {
-    stack_t *top;
-    int divisor;
+    stack_t *first, *second;
+    int result;
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -165,24 +189,31 @@ void div_op(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    if ((*stack)->n == 0)
+    first = *stack;
+    second = (*stack)->next;
+
+    if (first->n == 0)
     {
         fprintf(stderr, "L%u: division by zero\n", line_number);
         exit(EXIT_FAILURE);
     }
 
-    top = *stack;
-    divisor = top->next->n / top->n;
+    result = second->n / first->n;
+    second->n = result;
 
-    pop(stack, line_number);
-    (*stack)->n = divisor;
+    *stack = second;
+    free(first);
 }
 
-/* Mul function implementation */
+/**
+ * mul - Multiplies the second top element of the stack with the top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void mul(stack_t **stack, unsigned int line_number)
 {
-    stack_t *top;
-    int product;
+    stack_t *first, *second;
+    int result;
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -190,18 +221,25 @@ void mul(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    top = *stack;
-    product = top->n * top->next->n;
+    first = *stack;
+    second = (*stack)->next;
 
-    pop(stack, line_number);
-    (*stack)->n = product;
+    result = second->n * first->n;
+    second->n = result;
+
+    *stack = second;
+    free(first);
 }
 
-/* Mod function implementation */
+/**
+ * mod - Computes the rest of the division of the second top element by the top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
 void mod(stack_t **stack, unsigned int line_number)
 {
-    stack_t *top;
-    int remainder;
+    stack_t *first, *second;
+    int result;
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -209,115 +247,104 @@ void mod(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    if ((*stack)->n == 0)
+    first = *stack;
+    second = (*stack)->next;
+
+    if (first->n == 0)
     {
         fprintf(stderr, "L%u: division by zero\n", line_number);
         exit(EXIT_FAILURE);
     }
 
-    top = *stack;
-    remainder = top->next->n % top->n;
+    result = second->n % first->n;
+    second->n = result;
 
-    pop(stack, line_number);
-    (*stack)->n = remainder;
+    *stack = second;
+    free(first);
 }
 
-/* Pchar function implementation */
-void pchar(stack_t **stack, unsigned int line_number)
+/**
+ * nop - Does nothing.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears (unused).
+ */
+void nop(stack_t **stack, unsigned int line_number)
 {
-    if (*stack == NULL)
-    {
-        fprintf(stderr, "L%u: can't pchar, stack empty\n", line_number);
-        exit(EXIT_FAILURE);
-    }
-
-    if ((*stack)->n < 0 || (*stack)->n > 127)
-    {
-        fprintf(stderr, "L%u: can't pchar, value out of range\n", line_number);
-        exit(EXIT_FAILURE);
-    }
-
-    printf("%c\n", (*stack)->n);
+    (void)stack; /* Avoid unused parameter warning */
+    (void)line_number; /* Avoid unused parameter warning */
 }
 
-/* Main function implementation */
+/**
+ * main - Entry point for the Monty interpreter.
+ * @argc: Argument count.
+ * @argv: Argument vector.
+ * Return: EXIT_SUCCESS or EXIT_FAILURE.
+ */
 int main(int argc, char *argv[])
 {
     FILE *file;
-    char *line = NULL;
-    size_t len = 0;
-    int line_number = 1;
+    char line[BUFFER_SIZE];
+    char *opcode, *arg;
     stack_t *stack = NULL;
-    char *opcode;
-    int i;
-    instruction_t instructions[] = {
-        {"push", push},
-        {"pall", pall},
-        {"pint", pint},
-        {"pop", pop},
-        {"swap", swap},
-        {"add", add},
-        {"nop", nop},
-        {"sub", sub},
-        {"div", div_op},
-        {"mul", mul},
-        {"mod", mod},
-        {"pchar", pchar},
-        {NULL, NULL}
-    };
+    unsigned int line_number = 0;
 
     if (argc != 2)
     {
         fprintf(stderr, "USAGE: monty file\n");
-        exit(EXIT_FAILURE);
+        return (EXIT_FAILURE);
     }
 
     file = fopen(argv[1], "r");
     if (file == NULL)
     {
         fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-        exit(EXIT_FAILURE);
+        return (EXIT_FAILURE);
     }
 
-    while (1)
+    while (fgets(line, sizeof(line), file) != NULL)
     {
-        if (getline(&line, &len, file) == -1)
-        {
-            if (feof(file))
-                break;
+        line_number++;
 
-            fprintf(stderr, "Error: getline failed\n");
-            exit(EXIT_FAILURE);
-        }
-
-        if (line[0] == '#' || line[0] == '\n')
+        /* Skip comments */
+        if (line[0] == '#')
             continue;
 
         opcode = strtok(line, " \n");
-
         if (opcode == NULL)
             continue;
 
-        for (i = 0; instructions[i].opcode != NULL; i++)
-        {
-            if (strcmp(opcode, instructions[i].opcode) == 0)
-            {
-                instructions[i].f(&stack, line_number);
-                break;
-            }
-        }
+        arg = strtok(NULL, " \n");
 
-        if (instructions[i].opcode == NULL)
+        if (strcmp(opcode, "push") == 0)
+            push(&stack, line_number, arg);
+        else if (strcmp(opcode, "pall") == 0)
+            pall(&stack, line_number);
+        else if (strcmp(opcode, "pint") == 0)
+            pint(&stack, line_number);
+        else if (strcmp(opcode, "pop") == 0)
+            pop(&stack, line_number);
+        else if (strcmp(opcode, "swap") == 0)
+            swap(&stack, line_number);
+        else if (strcmp(opcode, "add") == 0)
+            add(&stack, line_number);
+        else if (strcmp(opcode, "nop") == 0)
+            nop(&stack, line_number);
+        else if (strcmp(opcode, "sub") == 0)
+            sub(&stack, line_number);
+        else if (strcmp(opcode, "div") == 0)
+            div_op(&stack, line_number);
+        else if (strcmp(opcode, "mul") == 0)
+            mul(&stack, line_number);
+        else if (strcmp(opcode, "mod") == 0)
+            mod(&stack, line_number);
+        else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
             fclose(file);
-            exit(EXIT_FAILURE);
+            return (EXIT_FAILURE);
         }
-
-        line_number++;
     }
 
-    free(line);
     fclose(file);
     return (EXIT_SUCCESS);
 }
