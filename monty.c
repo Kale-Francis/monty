@@ -232,31 +232,61 @@ void mul(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * mod - Computes the rest of the division of the second top element by the top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
+void mod(stack_t **stack, unsigned int line_number)
+{
+    stack_t *first, *second;
+    int result;
+
+    if (*stack == NULL || (*stack)->next == NULL)
+    {
+        fprintf(stderr, "L%u: can't mod, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    first = *stack;
+    second = (*stack)->next;
+
+    if (first->n == 0)
+    {
+        fprintf(stderr, "L%u: division by zero\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    result = second->n % first->n;
+    second->n = result;
+
+    *stack = second;
+    free(first);
+}
+
+/**
  * nop - Does nothing.
- * @stack: Double pointer to the top of the stack (unused).
+ * @stack: Double pointer to the top of the stack.
  * @line_number: Line number where the instruction appears (unused).
  */
 void nop(stack_t **stack, unsigned int line_number)
 {
-    (void)stack;      /* Avoid unused parameter warning */
+    (void)stack; /* Avoid unused parameter warning */
     (void)line_number; /* Avoid unused parameter warning */
 }
 
 /**
- * main - Entry point for the Monty bytecode interpreter.
+ * main - Entry point for the Monty interpreter.
  * @argc: Argument count.
  * @argv: Argument vector.
- *
- * Return: EXIT_SUCCESS on success, or EXIT_FAILURE on failure.
+ * Return: EXIT_SUCCESS or EXIT_FAILURE.
  */
 int main(int argc, char *argv[])
 {
     FILE *file;
     char line[BUFFER_SIZE];
-    unsigned int line_number = 0;
+    char *opcode, *arg;
     stack_t *stack = NULL;
-    char *opcode;
-    char *arg;
+    unsigned int line_number = 0;
 
     if (argc != 2)
     {
@@ -300,6 +330,8 @@ int main(int argc, char *argv[])
             div_op(&stack, line_number);
         else if (strcmp(opcode, "mul") == 0)
             mul(&stack, line_number);
+        else if (strcmp(opcode, "mod") == 0)
+            mod(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
