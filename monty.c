@@ -55,6 +55,22 @@ void pall(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * pint - Prints the value at the top of the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
+void pint(stack_t **stack, unsigned int line_number)
+{
+    if (*stack == NULL)
+    {
+        fprintf(stderr, "L%u: can't pint, stack empty\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%d\n", (*stack)->n);
+}
+
+/**
  * main - Entry point for the Monty bytecode interpreter.
  * @argc: Argument count.
  * @argv: Argument vector.
@@ -67,7 +83,7 @@ int main(int argc, char *argv[])
     char line[BUFFER_SIZE];
     unsigned int line_number = 0;
     stack_t *stack = NULL;
-    char *opcode;  /* Moved declarations to the start of the block */
+    char *opcode;
     char *arg;
 
     if (argc != 2)
@@ -96,6 +112,8 @@ int main(int argc, char *argv[])
             push(&stack, line_number, arg);
         else if (strcmp(opcode, "pall") == 0)
             pall(&stack, line_number);
+        else if (strcmp(opcode, "pint") == 0)
+            pint(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
