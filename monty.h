@@ -1,18 +1,10 @@
 #ifndef MONTY_H
 #define MONTY_H
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 
-/**
- * struct stack_s - doubly linked list representation of a stack (or queue)
- * @n: integer
- * @prev: points to the previous element of the stack (or queue)
- * @next: points to the next element of the stack (or queue)
- *
- * Description: doubly linked list node structure
- */
+/* Data structure for stack */
 typedef struct stack_s
 {
     int n;
@@ -20,19 +12,14 @@ typedef struct stack_s
     struct stack_s *next;
 } stack_t;
 
-/**
- * struct instruction_s - opcode and its corresponding function
- * @opcode: the opcode string
- * @f: the function associated with the opcode
- *
- * Description: struct to associate opcodes with their functions
- */
+/* Structure to hold instruction and function pointer */
 typedef struct instruction_s
 {
     char *opcode;
-    void (*f)(stack_t **, unsigned int, char *);
+    void (*f)(stack_t **stack, unsigned int line_number, char *arg);
 } instruction_t;
 
+/* Function prototypes */
 void push(stack_t **stack, unsigned int line_number, char *arg);
 void pall(stack_t **stack, unsigned int line_number, char *arg);
 void pint(stack_t **stack, unsigned int line_number, char *arg);
@@ -46,5 +33,6 @@ void mul(stack_t **stack, unsigned int line_number, char *arg);
 void mod(stack_t **stack, unsigned int line_number, char *arg);
 void pchar(stack_t **stack, unsigned int line_number, char *arg);
 void pstr(stack_t **stack, unsigned int line_number, char *arg);
+void rotl(stack_t **stack, unsigned int line_number, char *arg); /* Declare rotl */
 
 #endif /* MONTY_H */

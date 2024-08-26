@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BUFFER_SIZE 1024
-
 /* Function prototypes */
 void push(stack_t **stack, unsigned int line_number, char *arg);
 void pall(stack_t **stack, unsigned int line_number, char *arg);
@@ -19,6 +17,7 @@ void mul(stack_t **stack, unsigned int line_number, char *arg);
 void mod(stack_t **stack, unsigned int line_number, char *arg);
 void pchar(stack_t **stack, unsigned int line_number, char *arg);
 void pstr(stack_t **stack, unsigned int line_number, char *arg);
+void rotl(stack_t **stack, unsigned int line_number, char *arg);
 
 /* Function implementations */
 
@@ -273,37 +272,61 @@ void pchar(stack_t **stack, unsigned int line_number, char *arg)
 void pstr(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *current;
-    int ascii_value;
 
     (void)line_number; /* Avoid unused parameter warning */
     (void)arg;        /* Avoid unused parameter warning */
 
     current = *stack;
 
-    while (current != NULL)
+    while (current != NULL && current->n != 0 && current->n >= 0 && current->n <= 127)
     {
-        ascii_value = current->n;
-        if (ascii_value <= 0 || ascii_value > 127)
-            break;
-        printf("%c", ascii_value);
+        printf("%c", current->n);
         current = current->next;
     }
+
     printf("\n");
+}
+
+void rotl(stack_t **stack, unsigned int line_number, char *arg)
+{
+    stack_t *top, *bottom;
+
+    (void)line_number; /* Avoid unused parameter warning */
+    (void)arg;        /* Avoid unused parameter warning */
+
+    if (*stack == NULL || (*stack)->next == NULL)
+        return;
+
+    top = *stack;
+    bottom = *stack;
+
+    while (bottom->next != NULL)
+    {
+        bottom = bottom->next;
+    }
+
+    *stack = top->next;
+    (*stack)->prev = NULL;
+
+    top->next = NULL;
+    top->prev = bottom;
+    bottom->next = top;
 }
 
 void nop(stack_t **stack, unsigned int line_number, char *arg)
 {
-    (void)stack;
-    (void)line_number;
-    (void)arg;
+    (void)stack; /* Avoid unused parameter warning */
+    (void)line_number; /* Avoid unused parameter warning */
+    (void)arg; /* Avoid unused parameter warning */
 }
 
+/* main function */
 int main(int argc, char *argv[])
 {
     FILE *file;
-    char line[BUFFER_SIZE];
-    unsigned int line_number = 1;
-    stack_t *stack = NULL;
+    char line[1024];
+    char *opcode, *arg;
+    unsigned int line_number;
     instruction_t instructions[] = {
         {"push", push},
         {"pall", pall},
@@ -318,8 +341,11 @@ int main(int argc, char *argv[])
         {"mod", mod},
         {"pchar", pchar},
         {"pstr", pstr},
+        {"rotl", rotl},
         {NULL, NULL}
     };
+    instruction_t *instr;
+    stack_t *stack = NULL; /* Initialize stack */
 
     if (argc != 2)
     {
@@ -334,11 +360,12 @@ int main(int argc, char *argv[])
         return (EXIT_FAILURE);
     }
 
+    line_number = 1;
     while (fgets(line, sizeof(line), file) != NULL)
     {
-        char *opcode = strtok(line, " \n");
-        char *arg = strtok(NULL, " \n");
-        instruction_t *instr = instructions;
+        opcode = strtok(line, " \n");
+        arg = strtok(NULL, " \n");
+        instr = instructions;
 
         if (opcode == NULL || line[0] == '#')
             continue;
