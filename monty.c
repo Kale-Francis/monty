@@ -304,8 +304,13 @@ int main(int argc, char *argv[])
     while (fgets(line, sizeof(line), file) != NULL)
     {
         line_number++;
+
+        /* Skip lines that start with '#' or are empty */
+        if (line[0] == '#' || line[0] == '\n')
+            continue;
+
         opcode = strtok(line, " \n");
-        if (opcode == NULL || opcode[0] == '#')
+        if (opcode == NULL)
             continue;
 
         arg = strtok(NULL, " \n");
