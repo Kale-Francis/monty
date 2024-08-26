@@ -206,6 +206,32 @@ void div_op(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * mul - Multiplies the second top element of the stack with the top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
+void mul(stack_t **stack, unsigned int line_number)
+{
+    stack_t *first, *second;
+    int result;
+
+    if (*stack == NULL || (*stack)->next == NULL)
+    {
+        fprintf(stderr, "L%u: can't mul, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    first = *stack;
+    second = (*stack)->next;
+
+    result = second->n * first->n;
+    second->n = result;
+
+    *stack = second;
+    free(first);
+}
+
+/**
  * nop - Does nothing.
  * @stack: Double pointer to the top of the stack (unused).
  * @line_number: Line number where the instruction appears (unused).
@@ -245,14 +271,14 @@ int main(int argc, char *argv[])
         return (EXIT_FAILURE);
     }
 
-    while (fgets(line, BUFFER_SIZE, file) != NULL)
+    while (fgets(line, sizeof(line), file) != NULL)
     {
         line_number++;
         opcode = strtok(line, " \n");
-        arg = strtok(NULL, " \n");
-
         if (opcode == NULL || opcode[0] == '#')
             continue;
+
+        arg = strtok(NULL, " \n");
 
         if (strcmp(opcode, "push") == 0)
             push(&stack, line_number, arg);
@@ -272,6 +298,8 @@ int main(int argc, char *argv[])
             sub(&stack, line_number);
         else if (strcmp(opcode, "div") == 0)
             div_op(&stack, line_number);
+        else if (strcmp(opcode, "mul") == 0)
+            mul(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
