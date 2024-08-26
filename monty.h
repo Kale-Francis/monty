@@ -1,8 +1,8 @@
 #ifndef MONTY_H
 #define MONTY_H
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 /**
@@ -12,7 +12,6 @@
  * @next: points to the next element of the stack (or queue)
  *
  * Description: doubly linked list node structure
- * for stack, queues, LIFO, FIFO
  */
 typedef struct stack_s
 {
@@ -22,30 +21,30 @@ typedef struct stack_s
 } stack_t;
 
 /**
- * struct instruction_s - opcode and its function
- * @opcode: the opcode
- * @f: function to handle the opcode
+ * struct instruction_s - opcode and its corresponding function
+ * @opcode: the opcode string
+ * @f: the function associated with the opcode
  *
- * Description: opcode and its function
- * for stack, queues, LIFO, FIFO
+ * Description: struct to associate opcodes with their functions
  */
 typedef struct instruction_s
 {
     char *opcode;
-    void (*f)(stack_t **stack, unsigned int line_number);
+    void (*f)(stack_t **, unsigned int, char *);
 } instruction_t;
 
-/* Function prototypes */
 void push(stack_t **stack, unsigned int line_number, char *arg);
-void pall(stack_t **stack, unsigned int line_number);
-void pint(stack_t **stack, unsigned int line_number);
-void pop(stack_t **stack, unsigned int line_number);
-void swap(stack_t **stack, unsigned int line_number);
-void add(stack_t **stack, unsigned int line_number);
-void nop(stack_t **stack, unsigned int line_number);
-void sub(stack_t **stack, unsigned int line_number);
-void div_op(stack_t **stack, unsigned int line_number);
-void mul(stack_t **stack, unsigned int line_number);
-void mod(stack_t **stack, unsigned int line_number);
+void pall(stack_t **stack, unsigned int line_number, char *arg);
+void pint(stack_t **stack, unsigned int line_number, char *arg);
+void pop(stack_t **stack, unsigned int line_number, char *arg);
+void swap(stack_t **stack, unsigned int line_number, char *arg);
+void add(stack_t **stack, unsigned int line_number, char *arg);
+void nop(stack_t **stack, unsigned int line_number, char *arg);
+void sub(stack_t **stack, unsigned int line_number, char *arg);
+void div_op(stack_t **stack, unsigned int line_number, char *arg);
+void mul(stack_t **stack, unsigned int line_number, char *arg);
+void mod(stack_t **stack, unsigned int line_number, char *arg);
+void pchar(stack_t **stack, unsigned int line_number, char *arg);
+void pstr(stack_t **stack, unsigned int line_number, char *arg);
 
 #endif /* MONTY_H */

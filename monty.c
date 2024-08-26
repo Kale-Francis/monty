@@ -1,13 +1,27 @@
 #include "monty.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define BUFFER_SIZE 1024
 
-/**
- * push - Pushes an element to the stack.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- * @arg: The argument to be pushed onto the stack.
- */
+/* Function prototypes */
+void push(stack_t **stack, unsigned int line_number, char *arg);
+void pall(stack_t **stack, unsigned int line_number, char *arg);
+void pint(stack_t **stack, unsigned int line_number, char *arg);
+void pop(stack_t **stack, unsigned int line_number, char *arg);
+void swap(stack_t **stack, unsigned int line_number, char *arg);
+void add(stack_t **stack, unsigned int line_number, char *arg);
+void nop(stack_t **stack, unsigned int line_number, char *arg);
+void sub(stack_t **stack, unsigned int line_number, char *arg);
+void div_op(stack_t **stack, unsigned int line_number, char *arg);
+void mul(stack_t **stack, unsigned int line_number, char *arg);
+void mod(stack_t **stack, unsigned int line_number, char *arg);
+void pchar(stack_t **stack, unsigned int line_number, char *arg);
+void pstr(stack_t **stack, unsigned int line_number, char *arg);
+
+/* Function implementations */
+
 void push(stack_t **stack, unsigned int line_number, char *arg)
 {
     int num;
@@ -36,16 +50,14 @@ void push(stack_t **stack, unsigned int line_number, char *arg)
     *stack = new_node;
 }
 
-/**
- * pall - Prints all the values on the stack, starting from the top.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears (unused).
- */
-void pall(stack_t **stack, unsigned int line_number)
+void pall(stack_t **stack, unsigned int line_number, char *arg)
 {
-    stack_t *current = *stack;
+    stack_t *current;
 
     (void)line_number; /* Avoid unused parameter warning */
+    (void)arg;        /* Avoid unused parameter warning */
+
+    current = *stack;
 
     while (current != NULL)
     {
@@ -54,13 +66,10 @@ void pall(stack_t **stack, unsigned int line_number)
     }
 }
 
-/**
- * pint - Prints the value at the top of the stack.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void pint(stack_t **stack, unsigned int line_number)
+void pint(stack_t **stack, unsigned int line_number, char *arg)
 {
+    (void)arg; /* Avoid unused parameter warning */
+
     if (*stack == NULL)
     {
         fprintf(stderr, "L%u: can't pint, stack empty\n", line_number);
@@ -70,14 +79,11 @@ void pint(stack_t **stack, unsigned int line_number)
     printf("%d\n", (*stack)->n);
 }
 
-/**
- * pop - Removes the top element of the stack.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void pop(stack_t **stack, unsigned int line_number)
+void pop(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *temp;
+
+    (void)arg; /* Avoid unused parameter warning */
 
     if (*stack == NULL)
     {
@@ -94,14 +100,11 @@ void pop(stack_t **stack, unsigned int line_number)
     free(temp);
 }
 
-/**
- * swap - Swaps the top two elements of the stack.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void swap(stack_t **stack, unsigned int line_number)
+void swap(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *first, *second;
+
+    (void)arg; /* Avoid unused parameter warning */
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -121,15 +124,12 @@ void swap(stack_t **stack, unsigned int line_number)
     *stack = second;
 }
 
-/**
- * add - Adds the top two elements of the stack.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void add(stack_t **stack, unsigned int line_number)
+void add(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *first, *second;
     int sum;
+
+    (void)arg; /* Avoid unused parameter warning */
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -147,15 +147,12 @@ void add(stack_t **stack, unsigned int line_number)
     free(first);
 }
 
-/**
- * sub - Subtracts the top element of the stack from the second top element.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void sub(stack_t **stack, unsigned int line_number)
+void sub(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *first, *second;
     int difference;
+
+    (void)arg; /* Avoid unused parameter warning */
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -173,15 +170,12 @@ void sub(stack_t **stack, unsigned int line_number)
     free(first);
 }
 
-/**
- * div_op - Divides the second top element of the stack by the top element.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void div_op(stack_t **stack, unsigned int line_number)
+void div_op(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *first, *second;
     int result;
+
+    (void)arg; /* Avoid unused parameter warning */
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -205,15 +199,12 @@ void div_op(stack_t **stack, unsigned int line_number)
     free(first);
 }
 
-/**
- * mul - Multiplies the second top element of the stack with the top element.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void mul(stack_t **stack, unsigned int line_number)
+void mul(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *first, *second;
     int result;
+
+    (void)arg; /* Avoid unused parameter warning */
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -231,15 +222,12 @@ void mul(stack_t **stack, unsigned int line_number)
     free(first);
 }
 
-/**
- * mod - Computes the rest of the division of the second top element by the top element.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears.
- */
-void mod(stack_t **stack, unsigned int line_number)
+void mod(stack_t **stack, unsigned int line_number, char *arg)
 {
     stack_t *first, *second;
     int result;
+
+    (void)arg; /* Avoid unused parameter warning */
 
     if (*stack == NULL || (*stack)->next == NULL)
     {
@@ -263,34 +251,79 @@ void mod(stack_t **stack, unsigned int line_number)
     free(first);
 }
 
-/**
- * nop - Does nothing.
- * @stack: Double pointer to the top of the stack.
- * @line_number: Line number where the instruction appears (unused).
- */
-void nop(stack_t **stack, unsigned int line_number)
+void pchar(stack_t **stack, unsigned int line_number, char *arg)
 {
-    (void)stack; /* Avoid unused parameter warning */
-    (void)line_number; /* Avoid unused parameter warning */
+    (void)arg; /* Avoid unused parameter warning */
+
+    if (*stack == NULL)
+    {
+        fprintf(stderr, "L%u: can't pchar, stack empty\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    if ((*stack)->n < 0 || (*stack)->n > 127)
+    {
+        fprintf(stderr, "L%u: can't pchar, value out of range\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%c\n", (*stack)->n);
 }
 
-/**
- * main - Entry point for the Monty interpreter.
- * @argc: Argument count.
- * @argv: Argument vector.
- * Return: EXIT_SUCCESS or EXIT_FAILURE.
- */
+void pstr(stack_t **stack, unsigned int line_number, char *arg)
+{
+    stack_t *current;
+    int ascii_value;
+
+    (void)line_number; /* Avoid unused parameter warning */
+    (void)arg;        /* Avoid unused parameter warning */
+
+    current = *stack;
+
+    while (current != NULL)
+    {
+        ascii_value = current->n;
+        if (ascii_value <= 0 || ascii_value > 127)
+            break;
+        printf("%c", ascii_value);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+void nop(stack_t **stack, unsigned int line_number, char *arg)
+{
+    (void)stack;
+    (void)line_number;
+    (void)arg;
+}
+
 int main(int argc, char *argv[])
 {
     FILE *file;
     char line[BUFFER_SIZE];
-    char *opcode, *arg;
+    unsigned int line_number = 1;
     stack_t *stack = NULL;
-    unsigned int line_number = 0;
+    instruction_t instructions[] = {
+        {"push", push},
+        {"pall", pall},
+        {"pint", pint},
+        {"pop", pop},
+        {"swap", swap},
+        {"add", add},
+        {"nop", nop},
+        {"sub", sub},
+        {"div", div_op},
+        {"mul", mul},
+        {"mod", mod},
+        {"pchar", pchar},
+        {"pstr", pstr},
+        {NULL, NULL}
+    };
 
     if (argc != 2)
     {
-        fprintf(stderr, "USAGE: monty file\n");
+        fprintf(stderr, "Usage: monty file\n");
         return (EXIT_FAILURE);
     }
 
@@ -303,46 +336,31 @@ int main(int argc, char *argv[])
 
     while (fgets(line, sizeof(line), file) != NULL)
     {
-        line_number++;
+        char *opcode = strtok(line, " \n");
+        char *arg = strtok(NULL, " \n");
+        instruction_t *instr = instructions;
 
-        /* Skip comments */
-        if (line[0] == '#')
+        if (opcode == NULL || line[0] == '#')
             continue;
 
-        opcode = strtok(line, " \n");
-        if (opcode == NULL)
-            continue;
+        while (instr->opcode != NULL)
+        {
+            if (strcmp(opcode, instr->opcode) == 0)
+            {
+                instr->f(&stack, line_number, arg);
+                break;
+            }
+            instr++;
+        }
 
-        arg = strtok(NULL, " \n");
-
-        if (strcmp(opcode, "push") == 0)
-            push(&stack, line_number, arg);
-        else if (strcmp(opcode, "pall") == 0)
-            pall(&stack, line_number);
-        else if (strcmp(opcode, "pint") == 0)
-            pint(&stack, line_number);
-        else if (strcmp(opcode, "pop") == 0)
-            pop(&stack, line_number);
-        else if (strcmp(opcode, "swap") == 0)
-            swap(&stack, line_number);
-        else if (strcmp(opcode, "add") == 0)
-            add(&stack, line_number);
-        else if (strcmp(opcode, "nop") == 0)
-            nop(&stack, line_number);
-        else if (strcmp(opcode, "sub") == 0)
-            sub(&stack, line_number);
-        else if (strcmp(opcode, "div") == 0)
-            div_op(&stack, line_number);
-        else if (strcmp(opcode, "mul") == 0)
-            mul(&stack, line_number);
-        else if (strcmp(opcode, "mod") == 0)
-            mod(&stack, line_number);
-        else
+        if (instr->opcode == NULL)
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
             fclose(file);
             return (EXIT_FAILURE);
         }
+
+        line_number++;
     }
 
     fclose(file);
