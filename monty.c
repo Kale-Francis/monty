@@ -71,6 +71,30 @@ void pint(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * pop - Removes the top element of the stack.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
+void pop(stack_t **stack, unsigned int line_number)
+{
+    stack_t *temp;
+
+    if (*stack == NULL)
+    {
+        fprintf(stderr, "L%u: can't pop an empty stack\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    temp = *stack;
+    *stack = (*stack)->next;
+
+    if (*stack != NULL)
+        (*stack)->prev = NULL;
+
+    free(temp);
+}
+
+/**
  * main - Entry point for the Monty bytecode interpreter.
  * @argc: Argument count.
  * @argv: Argument vector.
@@ -114,6 +138,8 @@ int main(int argc, char *argv[])
             pall(&stack, line_number);
         else if (strcmp(opcode, "pint") == 0)
             pint(&stack, line_number);
+        else if (strcmp(opcode, "pop") == 0)
+            pop(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
