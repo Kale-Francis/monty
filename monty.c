@@ -174,6 +174,38 @@ void sub(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * div_op - Divides the second top element of the stack by the top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
+void div_op(stack_t **stack, unsigned int line_number)
+{
+    stack_t *first, *second;
+    int result;
+
+    if (*stack == NULL || (*stack)->next == NULL)
+    {
+        fprintf(stderr, "L%u: can't div, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    first = *stack;
+    second = (*stack)->next;
+
+    if (first->n == 0)
+    {
+        fprintf(stderr, "L%u: division by zero\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    result = second->n / first->n;
+    second->n = result;
+
+    *stack = second;
+    free(first);
+}
+
+/**
  * nop - Does nothing.
  * @stack: Double pointer to the top of the stack (unused).
  * @line_number: Line number where the instruction appears (unused).
@@ -234,10 +266,12 @@ int main(int argc, char *argv[])
             swap(&stack, line_number);
         else if (strcmp(opcode, "add") == 0)
             add(&stack, line_number);
-        else if (strcmp(opcode, "sub") == 0)
-            sub(&stack, line_number);
         else if (strcmp(opcode, "nop") == 0)
             nop(&stack, line_number);
+        else if (strcmp(opcode, "sub") == 0)
+            sub(&stack, line_number);
+        else if (strcmp(opcode, "div") == 0)
+            div_op(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
@@ -247,13 +281,5 @@ int main(int argc, char *argv[])
     }
 
     fclose(file);
-
-    while (stack != NULL)
-    {
-        stack_t *temp = stack;
-        stack = stack->next;
-        free(temp);
-    }
-
     return (EXIT_SUCCESS);
 }
