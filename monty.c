@@ -148,6 +148,32 @@ void add(stack_t **stack, unsigned int line_number)
 }
 
 /**
+ * sub - Subtracts the top element of the stack from the second top element.
+ * @stack: Double pointer to the top of the stack.
+ * @line_number: Line number where the instruction appears.
+ */
+void sub(stack_t **stack, unsigned int line_number)
+{
+    stack_t *first, *second;
+    int difference;
+
+    if (*stack == NULL || (*stack)->next == NULL)
+    {
+        fprintf(stderr, "L%u: can't sub, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    first = *stack;
+    second = (*stack)->next;
+
+    difference = second->n - first->n;
+    second->n = difference;
+
+    *stack = second;
+    free(first);
+}
+
+/**
  * nop - Does nothing.
  * @stack: Double pointer to the top of the stack (unused).
  * @line_number: Line number where the instruction appears (unused).
@@ -177,14 +203,14 @@ int main(int argc, char *argv[])
     if (argc != 2)
     {
         fprintf(stderr, "USAGE: monty file\n");
-        exit(EXIT_FAILURE);
+        return (EXIT_FAILURE);
     }
 
     file = fopen(argv[1], "r");
     if (file == NULL)
     {
         fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-        exit(EXIT_FAILURE);
+        return (EXIT_FAILURE);
     }
 
     while (fgets(line, BUFFER_SIZE, file) != NULL)
@@ -208,12 +234,15 @@ int main(int argc, char *argv[])
             swap(&stack, line_number);
         else if (strcmp(opcode, "add") == 0)
             add(&stack, line_number);
+        else if (strcmp(opcode, "sub") == 0)
+            sub(&stack, line_number);
         else if (strcmp(opcode, "nop") == 0)
             nop(&stack, line_number);
         else
         {
             fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
-            exit(EXIT_FAILURE);
+            fclose(file);
+            return (EXIT_FAILURE);
         }
     }
 
@@ -226,5 +255,5 @@ int main(int argc, char *argv[])
         free(temp);
     }
 
-    return EXIT_SUCCESS;
+    return (EXIT_SUCCESS);
 }
