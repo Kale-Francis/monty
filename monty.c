@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Global variable to keep track of the data structure mode */
+int mode = 0; /* 0 for stack, 1 for queue */
+
 /* Function prototypes */
 void push(stack_t **stack, unsigned int line_number, char *arg);
 void pall(stack_t **stack, unsigned int line_number, char *arg);
@@ -18,7 +21,9 @@ void mod(stack_t **stack, unsigned int line_number, char *arg);
 void pchar(stack_t **stack, unsigned int line_number, char *arg);
 void pstr(stack_t **stack, unsigned int line_number, char *arg);
 void rotl(stack_t **stack, unsigned int line_number, char *arg);
-void rotr(stack_t **stack, unsigned int line_number, char *arg); /* Function prototype for rotr */
+void rotr(stack_t **stack, unsigned int line_number, char *arg);
+void stack_mode(stack_t **stack, unsigned int line_number, char *arg);
+void queue_mode(stack_t **stack, unsigned int line_number, char *arg);
 
 /* Function implementations */
 
@@ -42,12 +47,32 @@ void push(stack_t **stack, unsigned int line_number, char *arg)
 
     new_node->n = num;
     new_node->prev = NULL;
-    new_node->next = *stack;
 
-    if (*stack != NULL)
-        (*stack)->prev = new_node;
+    if (mode == 0) /* Stack mode (LIFO) */
+    {
+        new_node->next = *stack;
+        if (*stack != NULL)
+            (*stack)->prev = new_node;
+        *stack = new_node;
+    }
+    else /* Queue mode (FIFO) */
+    {
+        stack_t *last = *stack;
 
-    *stack = new_node;
+        new_node->next = NULL;
+        if (*stack == NULL)
+        {
+            *stack = new_node;
+        }
+        else
+        {
+            while (last->next != NULL)
+                last = last->next;
+
+            last->next = new_node;
+            new_node->prev = last;
+        }
+    }
 }
 
 void pall(stack_t **stack, unsigned int line_number, char *arg)
@@ -350,6 +375,37 @@ void rotr(stack_t **stack, unsigned int line_number, char *arg)
     }
 }
 
+void stack_mode(stack_t **stack, unsigned int line_number, char *arg)
+{
+    (void)stack; /* Avoid unused parameter warning */
+    (void)line_number; /* Avoid unused parameter warning */
+    (void)arg; /* Avoid unused parameter warning */
+
+    mode = 0; /* Set mode to stack (LIFO) */
+}
+
+void queue_mode(stack_t **stack, unsigned int line_number, char *arg)
+{
+    stack_t *last;
+
+    (void)stack; /* Avoid unused parameter warning */
+    (void)line_number; /* Avoid unused parameter warning */
+    (void)arg; /* Avoid unused parameter warning */
+
+    mode = 1; /* Set mode to queue (FIFO) */
+
+    if (*stack == NULL || (*stack)->next == NULL)
+        return;
+
+    last = *stack;
+    while (last->next != NULL)
+        last = last->next;
+
+    *stack = last;
+    (*stack)->prev = NULL;
+}
+
+/* Implementation of the nop function */
 void nop(stack_t **stack, unsigned int line_number, char *arg)
 {
     (void)stack; /* Avoid unused parameter warning */
@@ -379,7 +435,9 @@ int main(int argc, char *argv[])
         {"pchar", pchar},
         {"pstr", pstr},
         {"rotl", rotl},
-        {"rotr", rotr}, /* Add rotr to the instructions array */
+        {"rotr", rotr},
+        {"stack", stack_mode},
+        {"queue", queue_mode},
         {NULL, NULL}
     };
     instruction_t *instr;

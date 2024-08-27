@@ -34,6 +34,11 @@ void mod(stack_t **stack, unsigned int line_number, char *arg);
 void pchar(stack_t **stack, unsigned int line_number, char *arg);
 void pstr(stack_t **stack, unsigned int line_number, char *arg);
 void rotl(stack_t **stack, unsigned int line_number, char *arg);
-void rotr(stack_t **stack, unsigned int line_number, char *arg); /* Declare rotr */
+void rotr(stack_t **stack, unsigned int line_number, char *arg);
+void stack_mode(stack_t **stack, unsigned int line_number, char *arg);
+void queue_mode(stack_t **stack, unsigned int line_number, char *arg); /* Add function prototypes */
+
+/* Global variable to keep track of the data structure mode */
+extern int mode;
 
 #endif /* MONTY_H */
