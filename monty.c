@@ -296,16 +296,18 @@ void rotl(stack_t **stack, unsigned int line_number, char *arg)
     (void)arg;        /* Avoid unused parameter warning */
 
     if (*stack == NULL || (*stack)->next == NULL)
-        return;
+        return; /* No need to rotate if the stack is empty or has only one element */
 
     top = *stack;
     bottom = *stack;
 
+    /* Find the bottom node */
     while (bottom->next != NULL)
     {
         bottom = bottom->next;
     }
 
+    /* Rotate the stack */
     *stack = top->next;
     (*stack)->prev = NULL;
 
