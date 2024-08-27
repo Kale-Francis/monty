@@ -18,6 +18,7 @@ void mod(stack_t **stack, unsigned int line_number, char *arg);
 void pchar(stack_t **stack, unsigned int line_number, char *arg);
 void pstr(stack_t **stack, unsigned int line_number, char *arg);
 void rotl(stack_t **stack, unsigned int line_number, char *arg);
+void rotr(stack_t **stack, unsigned int line_number, char *arg); /* Function prototype for rotr */
 
 /* Function implementations */
 
@@ -278,7 +279,6 @@ void pstr(stack_t **stack, unsigned int line_number, char *arg)
 
     current = *stack;
 
-    /* Print the string according to the requirements */
     while (current != NULL && current->n != 0 && current->n >= 0 && current->n <= 127)
     {
         printf("%c", current->n);
@@ -316,6 +316,40 @@ void rotl(stack_t **stack, unsigned int line_number, char *arg)
     bottom->next = top;
 }
 
+void rotr(stack_t **stack, unsigned int line_number, char *arg)
+{
+    stack_t *top, *bottom;
+
+    (void)line_number; /* Avoid unused parameter warning */
+    (void)arg;        /* Avoid unused parameter warning */
+
+    if (*stack == NULL || (*stack)->next == NULL)
+        return; /* No need to rotate if the stack is empty or has only one element */
+
+    bottom = *stack;
+
+    /* Find the bottom node */
+    while (bottom->next != NULL)
+    {
+        bottom = bottom->next;
+    }
+
+    /* If the stack has more than one element */
+    if (bottom != *stack)
+    {
+        top = *stack;
+
+        /* Remove the bottom node from the stack */
+        bottom->prev->next = NULL;
+        bottom->prev = NULL;
+
+        /* Move the bottom node to the top of the stack */
+        bottom->next = top;
+        top->prev = bottom;
+        *stack = bottom;
+    }
+}
+
 void nop(stack_t **stack, unsigned int line_number, char *arg)
 {
     (void)stack; /* Avoid unused parameter warning */
@@ -345,6 +379,7 @@ int main(int argc, char *argv[])
         {"pchar", pchar},
         {"pstr", pstr},
         {"rotl", rotl},
+        {"rotr", rotr}, /* Add rotr to the instructions array */
         {NULL, NULL}
     };
     instruction_t *instr;

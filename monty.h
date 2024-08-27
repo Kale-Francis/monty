@@ -33,6 +33,7 @@ void mul(stack_t **stack, unsigned int line_number, char *arg);
 void mod(stack_t **stack, unsigned int line_number, char *arg);
 void pchar(stack_t **stack, unsigned int line_number, char *arg);
 void pstr(stack_t **stack, unsigned int line_number, char *arg);
-void rotl(stack_t **stack, unsigned int line_number, char *arg); /* Declare rotl */
+void rotl(stack_t **stack, unsigned int line_number, char *arg);
+void rotr(stack_t **stack, unsigned int line_number, char *arg); /* Declare rotr */
 
 #endif /* MONTY_H */
