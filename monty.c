@@ -278,6 +278,7 @@ void pstr(stack_t **stack, unsigned int line_number, char *arg)
 
     current = *stack;
 
+    /* Print the string according to the requirements */
     while (current != NULL && current->n != 0 && current->n >= 0 && current->n <= 127)
     {
         printf("%c", current->n);
